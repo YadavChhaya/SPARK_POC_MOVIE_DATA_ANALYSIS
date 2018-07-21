@@ -1,0 +1,44 @@
+Spark POC – Analyzing MovieLens Dataset
+============================================
+
+Dataset Definition
+--------------------
+Column 1: User ID
+
+Column 2: Movie ID
+
+Column 3: Rating
+
+Column 4: Timestamp
+
+Input Dataset:
+---------------
+https://drive.google.com/file/d/0Bxr27gVaXO5sRUZnMjBQR0lqNDA/view
+
+Problem Statement:
+-------------------
+calculate the number of movies that are rated on a scale of 1 to 5.
+
+hadoop fs -mkdir -p /user/hadoop/input/
+hadoop fs -put /home/cloudera/Downloads/ml-100k/u.data /user/hadoop/input/
+spark-shell
+val rdd1 = sc.textFile("hdfs://quickstart.cloudera:8020/user/hadoop/input/u.data")
+rdd1.count
+val rdd2 = rdd1.map{ line => line.toString() }
+val rdd3 = rdd2.map{ field => field.split("\t") }
+val rdd4 = rdd3.map{ x => (x(2),1) }
+val rdd5 = rdd4.reduceByKey{_+_}
+val rdd6 = rdd5.sortByKey()
+rdd6.collect()
+rdd6.saveAsTextFile("hdfs://quickstart.cloudera:8020/user/hadoop/outputx")
+rdd6.foreach(println)
+
+Output: 
+-------
+
+(1,6110)
+(2,11370)
+(3,27145)
+(4,34174)
+(5,21201)
+
